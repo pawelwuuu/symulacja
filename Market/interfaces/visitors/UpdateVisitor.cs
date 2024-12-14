@@ -17,6 +17,6 @@ public class UpdateVisitor : IVisitor
 
     public void VisitBuyer(Buyer buyer)
     {
-        buyer.Budget += buyer.Budget * buyer.InflationRate;
+        buyer.Budget += new Random().Next(-2, 2) * 1000;
     }
 }
