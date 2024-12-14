@@ -1,8 +1,11 @@
+using Market.visitors;
+
 namespace Market.entities;
 
-public abstract class Entity
+public abstract class Entity : IVisitable
 {
-    protected Guid Guid = Guid.NewGuid();
+    public Guid Guid = Guid.NewGuid();
     protected int Turn;
     public void NextTurn() => Turn++;
+    public abstract void Accept(IVisitor visitor);
 }

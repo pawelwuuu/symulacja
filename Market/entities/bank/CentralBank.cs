@@ -31,18 +31,36 @@ public class CentralBank : Entity, IObserver<Seller>
     public void IntroduceNewInflationRate()
     {
         InflationRate = CalculateInflationRate();
-        Console.WriteLine($"nowa inflacja: {InflationRate}");
     }
     
     private double CalculateInflationRate()
     {
         if (!_bankSalesHistory.HasTurnData(Turn - 1))
-            return _inflationRate + 0.005;
+        {
+            Console.WriteLine($"Brak danych do obliczenia inflacji {InflationRate}");
+            return _inflationRate;
+        }
 
         var lastTurnover = _bankSalesHistory.GetFinancialTurnover(Turn - 1);
         var bankIncome = lastTurnover * _inflationRate;
+
+        if (bankIncome < _reqTaxAmount)
+        {
+            Console.WriteLine($"new inflation rate {InflationRate + 0.01}");
+            return InflationRate += 0.03;
+        }
+        else
+        {
+            Console.WriteLine($"new inflation rate {InflationRate - 0.01}");
+            return InflationRate -= 0.01;
+        }
         
-        return Math.Min(Math.Max(-0.045, bankIncome/_reqTaxAmount), _inflationRate);
+        // Console.WriteLine($"nowa inflacja: {InflationRate + Math.Min(Math.Max(-0.045, _reqTaxAmount/bankIncome), 0.07)} poprzedni obrot ${lastTurnover} {bankIncome/_reqTaxAmount} {_reqTaxAmount}");
+        
+        
+        
+        return InflationRate + Math.Min(Math.Max(-0.045, _reqTaxAmount/bankIncome), 0.07);
+        // return bankIncome / _reqTaxAmount;
     }
 
     public void SubscribeSeller(IObservable<Seller> observable)
@@ -59,5 +77,10 @@ public class CentralBank : Entity, IObserver<Seller>
     public void OnNext(Seller value)
     {
         _bankSalesHistory.RegisterIncome(Turn, value);
+    }
+
+    public override void Accept(IVisitor visitor)
+    {
+        visitor.VisitCentralBank(this);
     }
 }

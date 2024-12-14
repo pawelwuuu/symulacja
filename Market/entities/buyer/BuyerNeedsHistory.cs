@@ -11,7 +11,7 @@ public class BuyerNeedsHistory
         
         _buyerNeedsHistory[name].Enqueue(price);
         
-        if (_buyerNeedsHistory[name].Count > 2)
+        if (_buyerNeedsHistory[name].Count > 3)
             _buyerNeedsHistory[name].Dequeue();
     }
 

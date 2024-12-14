@@ -6,4 +6,5 @@ public interface IVisitor
 {
     void VisitSeller(Seller seller);
     void VisitBuyer(Buyer buyer);
+    void VisitCentralBank(CentralBank centralBank);
 }

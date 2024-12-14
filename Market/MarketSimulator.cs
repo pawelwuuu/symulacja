@@ -31,12 +31,12 @@ public class MarketSimulator
         Sellers.ForEach(s => s.NextTurn());
         Buyers.ForEach(b => b.NextTurn());
         CentralBank.NextTurn();
+        Console.WriteLine("-----------------------------------\n");
     }
     
     public void SimulateTurn()
     {
-        CentralBank.IntroduceNewInflationRate();
-        
+        CentralBank.Accept(_visitor);
         Buyers.ForEach(b => b.Accept(_visitor));
         Sellers.ForEach(s => s.Accept(_visitor));
         

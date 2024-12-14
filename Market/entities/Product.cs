@@ -11,7 +11,8 @@ public class Product
     public string Name { get; set; }
     public double ProductionCost { get; set; }
     public double Price { get; set; }
-    public double Quantity { get; set; }
+    public int Quantity { get; set; }
+    public int QuantityConstant { get; private set; }
     public ProductType Type { get; set; }
 
     public Product(string name, double productionCost, double price, ProductType type, int quantity)
@@ -21,5 +22,6 @@ public class Product
         Price = price;
         Type = type;
         Quantity = quantity;
+        QuantityConstant = quantity;
     }
 }

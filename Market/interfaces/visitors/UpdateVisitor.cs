@@ -20,14 +20,23 @@ public class UpdateVisitor : IVisitor
         {
             product.Price = product.ProductionCost * (1 + seller.Margin) * (1 + seller.InflationRate);
         }
+        seller.Products.ForEach(p => p.Quantity = p.QuantityConstant);
         seller.ProductProvider.NotifyBuyers(seller);
     }
 
     public void VisitBuyer(Buyer buyer)
     {
-        buyer.Budget += _random.Next(1500, 2300);
+        buyer.Budget += _random.Next(9, 24) * (1 + buyer.InflationRate * 0.9);
+        
+        Console.WriteLine($"Nowy budzet {buyer.Budget} dla {buyer.Guid.ToString()[^4..]}");
+        
         if (buyer.Needs.Count == 0)
             UpdateBuyerNeeds(buyer);
+    }
+
+    public void VisitCentralBank(CentralBank centralBank)
+    {
+        centralBank.IntroduceNewInflationRate();
     }
 
     public void UpdateBuyerNeeds(Buyer buyer)
