@@ -1,11 +1,14 @@
 using Market.publishers;
 using Market.visitors;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Market.entities;
 
-public class Seller : IEntity, IObserver<CentralBank>
+public class Seller : Entity, IVisitable, IObserver<CentralBank>
 {
-    public readonly Dictionary<int, List<double>>SalesHistory = new Dictionary<int, List<double>>(); // turn -> List<price>
+    public readonly Dictionary<int, List<double>> SalesHistory = new Dictionary<int, List<double>>();
     public List<Product> Products { get; private set; }
     public double Margin { get; set; } = 0.2;
     public double InflationRate { get; private set; }
@@ -19,41 +22,53 @@ public class Seller : IEntity, IObserver<CentralBank>
         ProductProvider = new ProductPriceProvider();
     }
     
-    public void AdjustMargin(int currentRound)
+    public void AdjustMargin()
+{
+
+            if (base.Turn < 5){ //Handle the beginning rounds, wait till SalesHistory reaches appropriate size for doing averages
+            return;
+          }
+
+        var averageOfLast5Turns = GetAverageSalesFromLast5Turns();
+
+       if (averageOfLast5Turns > SalesHistory[base.Turn - 1].Sum()) // previous round less that  last 5 average, lets slightly raise the margins to generate higher income from same sales.
+         {
+            Margin = Math.Min(0.5, Margin + 0.01); //  Increase Margin, slow upward change of margins
+              Console.WriteLine($"Increasing Margin: {Margin}");
+         }
+
+       else  if (averageOfLast5Turns <  SalesHistory[base.Turn - 1].Sum()) //decrease when round sales was lower from averages in longer horizon
+         {
+               Margin = Math.Max(0.05, Margin - 0.05); //fast down-speed adjustments of  margin
+               Console.WriteLine($"Decreasing Margin: {Margin}");
+          }
+
+
+   }
+private double GetAverageSalesFromLast5Turns() // Method for getting sales average of last 5 rounds to calculate better change
     {
-        int previousRoundSales = SalesHistory.ContainsKey(currentRound - 1) ? SalesHistory[currentRound - 1].Count : 0;
-        int twoRoundsAgoSales = SalesHistory.ContainsKey(currentRound - 2) ? SalesHistory[currentRound - 2].Count : 0;
-        
-        if (previousRoundSales > twoRoundsAgoSales)
-        {
-            Margin = Math.Min(0.5, Margin + 0.02); // Zwiększ marżę, ale nie powyżej 50%
-            Console.WriteLine($"Powiekszam marze: {Margin}");
-        }
-        else if (previousRoundSales < twoRoundsAgoSales)
-        {
-            Margin = Math.Max(0.1, Margin - 0.02); // Obniż marżę, ale nie poniżej 10%
-            Console.WriteLine($"Obnizam marze: {Margin}");
-        }
-        else
-        {
-            Console.WriteLine($"Marza stoi w miejscu: {Margin}");
-        }
-    }
-    
+      var lastTurnsSales =   SalesHistory
+            .Where(kvp => kvp.Key > base.Turn - 5 && kvp.Key < base.Turn)// take all rounds starting form before last 5th round, going towards round before now (exclude now).
+             .Select(kvp=> kvp.Value.Sum())
+            .ToList();// convert rounds into sums and finally collect last turn sums into list.
+
+       return lastTurnsSales.Count > 0 ?  lastTurnsSales.Average():0;  // do averaging in final part, but avoid errors when sales for less thatn 5 round are present
+
+  }
     public void BuyProduct(string productName)
     {
-        var product = Products.FirstOrDefault(p => p.Name == productName);
-        
-        if (product == null)
-            throw new Exception($"Product '{productName}' was not found");
+        var product = Products.First(p => p.Name == productName);
 
-        if (!SalesHistory.ContainsKey(MarketSimulator.Turn))
+        if (!SalesHistory.ContainsKey(base.Turn))
         {
-            SalesHistory.Add(MarketSimulator.Turn, new List<double>());
+            SalesHistory.Add(base.Turn, new List<double>());
         }
+
+        if (product.Quantity == 0)
+            return;
         
-        SalesHistory[MarketSimulator.Turn].Add(product.Price);
-        Products.Remove(product);
+        SalesHistory[base.Turn].Add(product.Price);
+        product.Quantity -= 1;
         ProductProvider.NotifyBank(this);
     }
 

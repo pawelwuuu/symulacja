@@ -4,19 +4,19 @@ using Market.visitors;
 
 namespace Market.entities;
 
-public class Buyer : IEntity, IObserver<Seller>, IObserver<CentralBank>
+public class Buyer : Entity, IVisitable, IObserver<Seller>, IObserver<CentralBank>
 {
-    public List<string> Needs { get; private set; } = new List<string>();
+    private BuyerNeedsHistory _buyerNeedsHistory;
+    public List<string> Needs { get; private set; } = [];
     public double Budget { get; set; }
     public double InflationRate { get; private set; }
     private List<IDisposable> _subscriptions = new List<IDisposable>();
     private readonly IBuyingRules _buyingRules;
 
-    public Buyer(double initialBudget, List<string> needs, IBuyingRules buyingRules)
+    public Buyer(IBuyingRules buyingRules)
     {
-        Budget = initialBudget;
-        Needs = needs;
         _buyingRules = buyingRules;
+        _buyerNeedsHistory = new BuyerNeedsHistory();
     }
 
     public void Accept(IVisitor visitor)
@@ -34,15 +34,6 @@ public class Buyer : IEntity, IObserver<Seller>, IObserver<CentralBank>
         _subscriptions.Add(centralBank.Subscribe(this));
     }
 
-    public void UnsubscribeAll()
-    {
-        foreach (var subscription in _subscriptions)
-        {
-            subscription.Dispose();
-        }
-        _subscriptions.Clear();
-    }
-
     public void OnCompleted() { }
 
     public void OnError(Exception error)
@@ -52,7 +43,12 @@ public class Buyer : IEntity, IObserver<Seller>, IObserver<CentralBank>
 
     public void OnNext(Seller seller)
     {
-        Console.WriteLine($"Buyer notified about seller: {seller.GetType().Name}");
+        foreach (var product in seller.Products)
+        {
+            _buyerNeedsHistory.RegisterNeedPrice(product.Name, product.Price);
+        }
+        
+        Console.WriteLine($"Buyer {Guid} notified about seller: {seller.GetType().Name}");
         TryPurchaseProduct(seller);
     }
 
@@ -68,8 +64,8 @@ public class Buyer : IEntity, IObserver<Seller>, IObserver<CentralBank>
         {
             bool canBuy = product.Type switch
             {
-                ProductType.Luxory => _buyingRules.CanBuyLuxury(product.Price, Budget),
-                ProductType.Essential => _buyingRules.CanBuyEssential(product.Price, Budget),
+                ProductType.Luxory => _buyingRules.CanBuyLuxury(product.Price, _buyerNeedsHistory.GetAverageNeedPrice(product.Name), Budget),
+                ProductType.Essential => _buyingRules.CanBuyEssential(product.Price, _buyerNeedsHistory.GetAverageNeedPrice(product.Name), Budget),
                 _ => false
             };
 
@@ -78,8 +74,6 @@ public class Buyer : IEntity, IObserver<Seller>, IObserver<CentralBank>
                 Console.WriteLine($"Buying product: {product.Name}");
                 Budget -= product.Price;
                 seller.BuyProduct(product.Name);
-                Needs.Remove(product.Name);
-                break; //1 naraz
             }
         }
     }

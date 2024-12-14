@@ -1,6 +1,8 @@
 namespace Market.entities;
 
-public class Entity
+public abstract class Entity
 {
-    
+    protected Guid Guid = Guid.NewGuid();
+    protected int Turn;
+    public void NextTurn() => Turn++;
 }

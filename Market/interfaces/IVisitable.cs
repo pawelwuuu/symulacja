@@ -2,7 +2,7 @@ using Market.visitors;
 
 namespace Market.entities;
 
-public interface IEntity
+public interface IVisitable
 { 
     void Accept(IVisitor visitor);
 }

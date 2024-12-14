@@ -6,18 +6,18 @@ namespace Market;
 
 public class MarketSimulator
 {
-    public static int Turn = 0;
     List<Seller> Sellers;
     List<Buyer> Buyers;
     CentralBank CentralBank;
-    private UpdateVisitor UpdateVisitor = new UpdateVisitor();
+    private IVisitor _visitor;
     private int _prevIncome = 0;
 
-    public MarketSimulator(List<Seller> sellers, List<Buyer> buyers, CentralBank centralBank)
+    public MarketSimulator(List<Seller> sellers, List<Buyer> buyers, CentralBank centralBank, IVisitor visitor)
     {
         Sellers = sellers;
         Buyers = buyers;
         CentralBank = centralBank;
+        _visitor = visitor;
         
         sellers.ForEach(s => s.Subscribe(CentralBank.CentralBankProvider));
         buyers.ForEach(b => b.Subscribe(CentralBank.CentralBankProvider));
@@ -26,13 +26,20 @@ public class MarketSimulator
         buyers.ForEach(b => Sellers.ForEach(s => b.Subscribe(s.ProductProvider)));
     }
 
+    public void NextTurn()
+    {
+        Sellers.ForEach(s => s.NextTurn());
+        Buyers.ForEach(b => b.NextTurn());
+        CentralBank.NextTurn();
+    }
     
     public void SimulateTurn()
     {
         CentralBank.IntroduceNewInflationRate();
         
-        Sellers.ForEach(UpdateVisitor.VisitSeller);
+        Buyers.ForEach(b => b.Accept(_visitor));
+        Sellers.ForEach(s => s.Accept(_visitor));
         
-        Turn++;
+        NextTurn();
     }
 }
