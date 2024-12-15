@@ -25,14 +25,14 @@ public class SimulatorTest
         var buyingStrategy = new DefaultBuyingStrategy();
         products = new List<Product>
         {
-            new Product("Piwo", 4.5, 0, ProductType.Essential, 4),
-            new Product("Piwo1", 5.2, 0, ProductType.Essential, 4),
-            new Product("TV1", 5.3, 0, ProductType.Luxory, 4)
+            new Product("Chleb", 4.5, 0, ProductType.Essential, 4),
+            new Product("Ser", 5.2, 0, ProductType.Essential, 4),
+            new Product("Lody", 5.3, 0, ProductType.Luxory, 4)
         };
         products2 = new List<Product>
         {
-            new Product("Piwo1", 5, 0, ProductType.Essential, 1),
-            new Product("TV", 4.8, 0, ProductType.Luxory, 4)
+            new Product("Ser", 5, 0, ProductType.Essential, 1),
+            new Product("Krakersy", 4.8, 0, ProductType.Luxory, 4)
         };
 
         sellers = new List<Seller>

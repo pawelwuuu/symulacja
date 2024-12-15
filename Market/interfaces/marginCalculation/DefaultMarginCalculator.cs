@@ -6,7 +6,6 @@ public class DefaultMarginCalculator : IMarginCalculator
     {
         if (salesHistory.Count < 3)
         {
-            Console.WriteLine($"Brak historii zakupów, skip marza: {currentMargin}");
             return currentMargin;
         }
 
@@ -23,7 +22,6 @@ public class DefaultMarginCalculator : IMarginCalculator
             currentMargin -= 0.02;
         }
         
-        Console.WriteLine($"Margin: {Math.Min(Math.Max(currentMargin, 0.1), 0.5)}");
         return Math.Min(Math.Max(currentMargin, 0.1), 0.5);
     }
 }

@@ -31,7 +31,6 @@ public class MarketSimulator
         Sellers.ForEach(s => s.NextTurn());
         Buyers.ForEach(b => b.NextTurn());
         CentralBank.NextTurn();
-        Console.WriteLine("-----------------------------------\n");
     }
     
     public void SimulateTurn()

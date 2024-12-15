@@ -33,8 +33,6 @@ public class UpdateVisitor : IVisitor
         buyer.Budget += _random.Next(LowerBoundSalary, UpperBoundSalary) * (1 + buyer.InflationRate * 0.9);
         // buyer.Budget += _random.Next(12, 24) * (1 + buyer.InflationRate * 0.9);
         
-        Console.WriteLine($"Nowy budzet {buyer.Budget} dla {buyer.Guid.ToString()[^4..]}");
-        
         if (buyer.Needs.Count == 0)
             UpdateBuyerNeeds(buyer);
     }
@@ -57,7 +55,6 @@ public class UpdateVisitor : IVisitor
             if (!buyer.Needs.Contains(product.Name))
             {
                 buyer.Needs.Add(product.Name);
-                Console.WriteLine($"Buyer added essential product: {product.Name}");
             }
         }
 
@@ -66,7 +63,6 @@ public class UpdateVisitor : IVisitor
             if (!buyer.Needs.Contains(product.Name))
             {
                 buyer.Needs.Add(product.Name);
-                Console.WriteLine($"Buyer added luxury product: {product.Name}");
             }
         }
     }

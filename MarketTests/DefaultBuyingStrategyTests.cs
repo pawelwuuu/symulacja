@@ -41,9 +41,6 @@ namespace Market.Tests
             _buyer.BuyerNeedsHistory.RegisterNeedPrice("Bread", 3.5);
             _buyer.BuyerNeedsHistory.RegisterNeedPrice("LuxuryCar", 3.5);
             
-            
-            Console.WriteLine(_buyer.BuyerNeedsHistory.GetAverageNeedPrice("Bread"));
-            
             _buyingStrategy.TryBuyProductFromSeller(_seller, _buyer);
 
             Assert.That(_buyer.Budget, Is.EqualTo(997));

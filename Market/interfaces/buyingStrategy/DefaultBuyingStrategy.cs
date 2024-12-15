@@ -17,7 +17,6 @@ public class DefaultBuyingStrategy : IBuyStrategy
 
             if (canBuy && buyer.Needs.Contains(product.Name))
             {
-                Console.WriteLine($"Buying product: {product.Name}");
                 buyer.Budget -= product.Price;
                 seller.BuyProduct(product.Name);
             }
