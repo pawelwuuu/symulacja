@@ -2,6 +2,7 @@
 using Market.buyingRules;
 using Market.entities;
 using Market.entities.buyingStrategy;
+using Market.entities.calculateInfaltion;
 using Market.entities.marginCalculation;
 using Market.visitors;
 
@@ -35,11 +36,11 @@ public class Program
         var p = products.Concat(products2).ToList();
         p.ForEach(p => Console.WriteLine(p.Name));
         
-        var visitor = new UpdateVisitor(p);
+        var visitor = new UpdateVisitor(p, 9 ,24);
 
-    var market = new MarketSimulator(sellers, buyers, new CentralBank(0.02, 3.6), visitor);
+    var market = new MarketSimulator(sellers, buyers, new CentralBank(0.02, 3.6, new DefaultInflationCalculator()), visitor);
 
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 2000; i++)
     {
         market.SimulateTurn();
     }

@@ -14,10 +14,10 @@ public class Buyer : Entity, IVisitable, IObserver<Seller>, IObserver<CentralBan
     public readonly IBuyingRules BuyingRules;
     public readonly IBuyStrategy BuyStrategy;
 
-    public Buyer(IBuyingRules buyingRules, IBuyStrategy buyStrategy)
+    public Buyer(IBuyingRules buyingRules, IBuyStrategy buyStrategy, int buyerHistoryLength = 3)
     {
         BuyingRules = buyingRules;
-        BuyerNeedsHistory = new BuyerNeedsHistory();
+        BuyerNeedsHistory = new BuyerNeedsHistory(buyerHistoryLength);
         BuyStrategy = buyStrategy;
     }
 

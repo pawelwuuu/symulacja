@@ -7,10 +7,14 @@ public class UpdateVisitor : IVisitor
     private Random _random = new Random();
     private readonly List<Product> essentialProducts;
     private readonly List<Product> luxuryProducts;
-    public UpdateVisitor(List<Product> products)
+    public int LowerBoundSalary { get; set; }
+    public int UpperBoundSalary { get; set; }
+    public UpdateVisitor(List<Product> products, int lowerBoundSalary, int upperBoundSalary)
     {
         essentialProducts = products.FindAll(p => p.Type == ProductType.Essential);
         luxuryProducts = products.FindAll(p => p.Type == ProductType.Luxory);
+        LowerBoundSalary = lowerBoundSalary;
+        UpperBoundSalary = upperBoundSalary;
     }
     
     public void VisitSeller(Seller seller)
@@ -26,7 +30,8 @@ public class UpdateVisitor : IVisitor
 
     public void VisitBuyer(Buyer buyer)
     {
-        buyer.Budget += _random.Next(9, 24) * (1 + buyer.InflationRate * 0.9);
+        buyer.Budget += _random.Next(LowerBoundSalary, UpperBoundSalary) * (1 + buyer.InflationRate * 0.9);
+        // buyer.Budget += _random.Next(12, 24) * (1 + buyer.InflationRate * 0.9);
         
         Console.WriteLine($"Nowy budzet {buyer.Budget} dla {buyer.Guid.ToString()[^4..]}");
         

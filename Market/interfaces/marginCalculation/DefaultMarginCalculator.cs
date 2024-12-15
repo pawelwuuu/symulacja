@@ -4,7 +4,7 @@ public class DefaultMarginCalculator : IMarginCalculator
 {
     public double CalculateMargin(Dictionary<int, List<double>> salesHistory, double currentMargin, int currentTurn)
     {
-        if (salesHistory.Count < 4)
+        if (salesHistory.Count < 3)
         {
             Console.WriteLine($"Brak historii zakupów, skip marza: {currentMargin}");
             return currentMargin;

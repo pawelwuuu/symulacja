@@ -6,9 +6,9 @@ namespace Market;
 
 public class MarketSimulator
 {
-    List<Seller> Sellers;
-    List<Buyer> Buyers;
-    CentralBank CentralBank;
+    public List<Seller> Sellers;
+    public List<Buyer> Buyers;
+    public CentralBank CentralBank;
     private IVisitor _visitor;
     private int _prevIncome = 0;
 

@@ -6,7 +6,7 @@ public class DefaultBuyingStrategy : IBuyStrategy
 {
     public void TryBuyProductFromSeller(Seller seller, Buyer buyer)
     {
-        foreach (var product in seller.Products)
+        foreach (var product in seller.Products.OrderBy(p => p.Type != ProductType.Essential))
         {
             bool canBuy = product.Type switch
             {

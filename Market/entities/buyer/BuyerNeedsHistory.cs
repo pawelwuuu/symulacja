@@ -3,6 +3,13 @@ namespace Market.entities;
 public class BuyerNeedsHistory
 {
     private Dictionary<string, Queue<double>> _buyerNeedsHistory = new();
+    private int _needsHistoryLenght = 3;
+
+    public BuyerNeedsHistory() {}
+    public BuyerNeedsHistory(int needsHistoryLenght)
+    {
+        _needsHistoryLenght = needsHistoryLenght;
+    }
 
     public void RegisterNeedPrice(string name, double price)
     {
@@ -11,7 +18,7 @@ public class BuyerNeedsHistory
         
         _buyerNeedsHistory[name].Enqueue(price);
         
-        if (_buyerNeedsHistory[name].Count > 3)
+        if (_buyerNeedsHistory[name].Count > _needsHistoryLenght)
             _buyerNeedsHistory[name].Dequeue();
     }
 
